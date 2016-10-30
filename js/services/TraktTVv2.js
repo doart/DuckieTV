@@ -4,8 +4,8 @@
  *
  * For API docs: check here: http://docs.trakt.apiary.io/#
  */
-DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
-    function(SettingsService, $q, $http, toaster) {
+DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster", "TMDB",
+    function(SettingsService, $q, $http, toaster, TMDB) {
 
         var activeSearchRequest = false,
             activeTrendingRequest = false,
@@ -17,21 +17,21 @@ DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
 
         var endpoints = {
             people: 'shows/%s/people',
-            serie: 'shows/%s?extended=full,images',
-            seasons: 'shows/%s/seasons?extended=full,images',
-            episodes: 'shows/%s/seasons/%s/episodes?extended=full,images',
-            search: 'search/show?extended=full,images&limit=50&query=%s',
-            trending: 'shows/trending?extended=full,images&limit=500',
+            serie: 'shows/%s?extended=full',
+            seasons: 'shows/%s/seasons?extended=full',
+            episodes: 'shows/%s/seasons/%s/episodes?extended=full',
+            search: 'search/show?extended=full&limit=50&query=%s',
+            trending: 'shows/trending?extended=full&limit=500',
             tvdb_id: 'search/tvdb/%s?type=show',
             trakt_id: 'search/trakt/%s?type=show',
             login: 'auth/login',
             updated: 'shows/updates/%s?limit=10000',
             config: 'users/settings',
             token: 'oauth/token',
-            watched: 'sync/watched/shows?extended=full,images&limit=10000',
+            watched: 'sync/watched/shows?extended=full&limit=10000',
             episodeSeen: 'sync/history',
             episodeUnseen: 'sync/history/remove',
-            userShows: 'sync/collection/shows?extended=full,images&limit=10000',
+            userShows: 'sync/collection/shows?extended=full&limit=10000',
             addCollection: 'sync/collection',
             removeCollection: 'sync/collection/remove'
         };
@@ -46,17 +46,6 @@ DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
                 Object.keys(show.ids).map(function(key) {
                     show[key + '_id'] = show.ids[key];
                 });
-                if ('images' in show) {
-                    if ('fanart' in show.images) {
-                        show.fanart = show.images.fanart.full;
-                    }
-                    if ('poster' in show.images) {
-                        show.poster = show.images.poster.thumb;
-                    }
-                    if ('banner' in show.images) {
-                        show.banner = 'thumb' in show.images.banner ? show.images.banner.thumb : show.images.banner.full;
-                    }
-                }
                 if ('title' in show) {
                     show.name = show.title;
                 }

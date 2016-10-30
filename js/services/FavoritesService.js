@@ -6,11 +6,11 @@
 DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injector",
     function($q, $rootScope, TraktTVv2, $injector) {
 
-        /** 
+        /**
          * Helper function to add a serie to the service.favorites hash if it doesn't already exist.
          * update existing otherwise.
          */
-        addToFavoritesList = function(serie) {
+        var addToFavoritesList = function(serie) {
             var existing = service.favorites.filter(function(el) {
                 return el.TVDB_ID == serie.TVDB_ID;
             });
@@ -26,11 +26,12 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
          * Helper function to map properties from the input data on a serie from Trakt.TV into a Serie CRUD object.
          * Input information will always overwrite existing information.
          */
-        fillSerie = function(serie, data) {
+        var fillSerie = function(serie, data) {
             data.TVDB_ID = data.tvdb_id;
             data.TVRage_ID = data.tvrage_id;
             data.IMDB_ID = data.imdb_id;
             data.TRAKT_ID = data.trakt_id;
+            data.TMDB_ID = data.tmdb_id;
             data.contentrating = data.certification;
             data.name = data.title;
             data.airs_dayofweek = data.airs.day;
@@ -68,11 +69,12 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
          * Helper function to map properties from the input data from Trakt.TV into a Episode CRUD object.
          * Input information will always overwrite existing information.
          */
-        fillEpisode = function(episode, data, season, serie, watched) {
+        var fillEpisode = function(episode, data, season, serie, watched) {
             // remap some properties on the data object to make them easy to set with a for loop. the CRUD object doesn't persist properties that are not registered, so that's cheap.
             data.TVDB_ID = data.tvdb_id;
             data.IMDB_ID = data.imdb_id;
             data.TRAKT_ID = data.trakt_id;
+            data.TRAKT_ID = data.tmdb_id;
             if (service.downloadRatings && (!episode.ratingcount || episode.ratingcount + 25 > data.votes)) {
                 data.rating = Math.round(data.rating * 10);
                 data.ratingcount = data.votes;
@@ -91,11 +93,12 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                 data.downloaded = 0;
                 data.watched = 0;
                 data.watchedAt = null;
-            };
+            }
+
             if (episode.isLeaked() && data.firstaired !== 0 && new Date().getTime() > data.firstaired) {
                 // if episode has aired then reset the leaked flag
                 data.leaked = 0;
-            };
+            }
 
             for (var i in data) {
                 if ((i in episode)) {
@@ -112,7 +115,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                         episode.watched = 1;
                     } else {
                         episode.watched = 0;
-                    };
+                    }
                 }
             });
             episode.ID_Serie = serie.getID();
@@ -125,7 +128,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
          * @param object seasons Trakt.TV seasons/episodes input
          * @param object series serie entity
          */
-        cleanupEpisodes = function(seasons, serie) {
+        var cleanupEpisodes = function(seasons, serie) {
             var tvdbList = [];
             seasons.map(function(season) {
                 season.episodes.map(function(episode) {
@@ -137,7 +140,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
             return CRUD.executeQuery('delete from Episodes where ID_Serie = ? and TVDB_ID NOT IN (' + tvdbList.join(',') + ')', [serie.ID_Serie]).then(function(result) {
                 if (result.rs.rowsAffected > 0) {
                     console.info("Cleaned up " + result.rs.rowsAffected + " orphaned episodes for series [" + serie.ID_Serie + "] " + serie.name);
-                };
+                }
                 return seasons;
             });
         };
@@ -148,7 +151,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
          * @param  object seasons extended seasons input data from Trakt
          * @return object seasonCache indexed by seasonnumber
          */
-        updateSeasons = function(serie, seasons) {
+        var updateSeasons = function(serie, seasons) {
             //console.debug("Update seasons!", seasons);
             return serie.getSeasonsByNumber().then(function(seasonCache) { // fetch the seasons and cache them by number.
                 return Promise.all(seasons.map(function(season) {
@@ -158,6 +161,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                     SE.ID_Serie = serie.getID();
                     SE.overview = season.overview;
                     SE.TRAKT_ID = season.trakt_id;
+                    SE.TMDB_ID = season.tmdb_id;
                     if (service.downloadRatings && (!SE.ratingcount || SE.ratingcount + 25 > season.votes)) {
                         SE.ratings = Math.round(season.rating * 10);
                         SE.ratingcount = season.votes;
@@ -172,7 +176,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
             });
         };
 
-        updateEpisodes = function(serie, seasons, watched, seasonCache) {
+        var updateEpisodes = function(serie, seasons, watched, seasonCache) {
             // console.debug(" Update episodes!", serie, seasons, watched, seasonCache);
             return serie.getEpisodesMap().then(function(episodeCache) {
                 return Promise.all(seasons.map(function(season) {
@@ -220,7 +224,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                         name: data.title,
                         TVDB_ID: data.tvdb_id
                     });
-                };
+                }
                 var serie = (useTrakt_id) ? service.getByTRAKT_ID(data.trakt_id) : service.getById(data.tvdb_id) || new Serie();
                 fillSerie(serie, data);
                 return serie.Persist().then(function() {
@@ -255,12 +259,12 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                 serie = serie instanceof CRUD.Entity ? serie : this.getById(serie);
                 return serie.Find('Episode', filters || {}).then(function(episodes) {
                     return episodes;
-                }, function(err) {
+                }, function() {
                     console.error("Error in getEpisodes", serie, filters || {});
                 });
             },
             waitForInitialization: function() {
-                return $q(function(resolve, reject) {
+                return $q(function(resolve) {
                     function waitForInitialize() {
                         if (service.initialized) {
                             resolve();
@@ -306,7 +310,6 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
             remove: function(serie) {
                 serie.displaycalendar = 0;
                 //console.debug("Remove serie from favorites!", serie);
-                var seriesToBeDeleted = service.getById(serie.TVDB_ID);
                 CRUD.executeQuery('delete from Seasons where ID_Serie = ' + serie.ID_Serie);
                 CRUD.executeQuery('delete from Episodes where ID_Serie = ' + serie.ID_Serie);
                 service.favoriteIDs = service.favoriteIDs.filter(function(id) {
@@ -323,7 +326,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                             $rootScope.$broadcast('serieslist:empty');
                         }
                     });
-                };
+                }
                 service.clearAdding(serie.TVDB_ID);
             },
             refresh: function() {
@@ -360,7 +363,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
              * The BackgroundRotator service is listening for this event
              */
             loadRandomBackground: function() {
-                // dafuq. no RANDOM() in sqlite in chrome... 
+                // dafuq. no RANDOM() in sqlite in chrome...
                 // then we pick a random array item from the resultset based on the amount.
                 CRUD.executeQuery("select fanart from Series where fanart != ''").then(function(result) {
                     if (result.rs.rows.length > 0) {
@@ -436,7 +439,6 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
 ])
 
 .run(["FavoritesService", "$state", "$rootScope", function(FavoritesService, $state, $rootScope) {
-
     //console.log("Executing favoritesservice.run block");
     $rootScope.$on('serieslist:empty', function() {
         //console.log("Series list is empty!, going to add screen.");
@@ -446,8 +448,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
     });
 
     //console.log("Executing favoritesservice.refresh.");
-
-    FavoritesService.refresh().then(function(favorites) {
+    FavoritesService.refresh().then(function() {
         //console.log("Favoritesservice refreshed!");
         FavoritesService.loadRandomBackground();
         FavoritesService.initialized = true;

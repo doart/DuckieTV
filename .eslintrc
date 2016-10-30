@@ -14,7 +14,10 @@
         "angular": true,
         "document": true,
         "CRUD": true,
-        "Promise": true
+        "Promise": true,
+        "Episode": true,
+        "Season": true,
+        "Serie": true
     },
     "plugins": [
         "angular"
@@ -51,7 +54,7 @@
         "angular/no-private-call": 2,
         "angular/no-service-method": 2,
         "angular/no-services": [2, ["$http", "$resource", "Restangular"]],
-        "angular/on-watch": 2,
+        "angular/on-watch": 0,
         "angular/rest-service": 0,
         "angular/service-name": 2,
         "angular/timeout-service": 0,
