@@ -46,7 +46,7 @@ CRUD.define(Serie, {
     className: 'Serie',
     table: 'Series',
     primary: 'ID_Serie',
-    fields: ['ID_Serie', 'name', 'banner', 'overview', 'TVDB_ID', 'IMDB_ID', 'TVRage_ID', 'actors', 'airs_dayofweek', 'airs_time', 'timezone', 'contentrating', 'firstaired', 'genre', 'country', 'language', 'network', 'rating', 'ratingcount', 'runtime', 'status', 'added', 'addedby', 'fanart', 'poster', 'lastupdated', 'lastfetched', 'nextupdate', 'displaycalendar', 'autoDownload', 'customSearchString', 'watched', 'notWatchedCount', 'ignoreGlobalQuality', 'ignoreGlobalIncludes', 'ignoreGlobalExcludes', 'searchProvider', 'ignoreHideSpecials', 'customSearchSizeMin', 'customSearchSizeMax', 'TRAKT_ID', 'dlPath', 'customDelay'],
+    fields: ['ID_Serie', 'name', 'banner', 'overview', 'TVDB_ID', 'IMDB_ID', 'TVRage_ID', 'actors', 'airs_dayofweek', 'airs_time', 'timezone', 'contentrating', 'firstaired', 'genre', 'country', 'language', 'network', 'rating', 'ratingcount', 'runtime', 'status', 'added', 'addedby', 'fanart', 'poster', 'lastupdated', 'lastfetched', 'nextupdate', 'displaycalendar', 'autoDownload', 'customSearchString', 'watched', 'notWatchedCount', 'ignoreGlobalQuality', 'ignoreGlobalIncludes', 'ignoreGlobalExcludes', 'searchProvider', 'ignoreHideSpecials', 'customSearchSizeMin', 'customSearchSizeMax', 'TRAKT_ID', 'dlPath', 'customDelay', 'TMDB_ID'],
     relations: {
         'Episode': CRUD.RELATION_FOREIGN,
         'Season': CRUD.RELATION_FOREIGN
@@ -54,8 +54,9 @@ CRUD.define(Serie, {
     indexes: [
         'fanart',
         'TRAKT_ID',
+        'TMDB_ID',
     ],
-    createStatement: 'CREATE TABLE Series (ID_Serie INTEGER PRIMARY KEY NOT NULL, name VARCHAR(250) DEFAULT(NULL), banner VARCHAR(1024) DEFAULT(NULL), overview TEXT DEFAULT(NULL), TVDB_ID INTEGER DEFAULT(NULL), IMDB_ID VARCHAR(20) DEFAULT(NULL), TVRage_ID INTEGER DEFAULT(NULL), actors VARCHAR(1024) DEFAULT(NULL), airs_dayofweek VARCHAR(10) DEFAULT(NULL), airs_time VARCHAR(15) DEFAULT(NULL), timezone VARCHAR(30) DEFAULT(NULL), contentrating VARCHAR(20) DEFAULT(NULL), firstaired DATE DEFAULT(NULL), genre VARCHAR(50) DEFAULT(NULL), country VARCHAR(50) DEFAULT(NULL), language VARCHAR(50) DEFAULT(NULL), network VARCHAR(50) DEFAULT(NULL), rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), runtime INTEGER DEFAULT(NULL), status VARCHAR(50) DEFAULT(NULL), added DATE DEFAULT(NULL), addedby VARCHAR(50) DEFAULT(NULL), fanart VARCHAR(150) DEFAULT(NULL), poster VARCHAR(150) DEFAULT(NULL), lastupdated TIMESTAMP DEFAULT (NULL), lastfetched TIMESTAMP DEFAULT (NULL), nextupdate TIMESTAMP DEFAULT (NULL), displaycalendar TINYINT DEFAULT(1), autoDownload TINYINT DEFAULT(1), customSearchString VARCHAR(150) DEFAULT(NULL), watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), ignoreGlobalQuality TINYINT DEFAULT(0), ignoreGlobalIncludes TINYINT DEFAULT(0), ignoreGlobalExcludes TINYINT DEFAULT(0), searchProvider VARCHAR(20) DEFAULT(NULL), ignoreHideSpecials TINYINT DEFAULT(0), customSearchSizeMin INTEGER DEFAULT(NULL), customSearchSizeMax INTEGER DEFAULT(NULL), TRAKT_ID INTEGER DEFAULT(NULL), dlPath TEXT DEFAULT(NULL), customDelay INTEGER DEFAULT(NULL) )',
+    createStatement: 'CREATE TABLE Series (ID_Serie INTEGER PRIMARY KEY NOT NULL, name VARCHAR(250) DEFAULT(NULL), banner VARCHAR(1024) DEFAULT(NULL), overview TEXT DEFAULT(NULL), TVDB_ID INTEGER DEFAULT(NULL), IMDB_ID VARCHAR(20) DEFAULT(NULL), TVRage_ID INTEGER DEFAULT(NULL), actors VARCHAR(1024) DEFAULT(NULL), airs_dayofweek VARCHAR(10) DEFAULT(NULL), airs_time VARCHAR(15) DEFAULT(NULL), timezone VARCHAR(30) DEFAULT(NULL), contentrating VARCHAR(20) DEFAULT(NULL), firstaired DATE DEFAULT(NULL), genre VARCHAR(50) DEFAULT(NULL), country VARCHAR(50) DEFAULT(NULL), language VARCHAR(50) DEFAULT(NULL), network VARCHAR(50) DEFAULT(NULL), rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), runtime INTEGER DEFAULT(NULL), status VARCHAR(50) DEFAULT(NULL), added DATE DEFAULT(NULL), addedby VARCHAR(50) DEFAULT(NULL), fanart VARCHAR(150) DEFAULT(NULL), poster VARCHAR(150) DEFAULT(NULL), lastupdated TIMESTAMP DEFAULT (NULL), lastfetched TIMESTAMP DEFAULT (NULL), nextupdate TIMESTAMP DEFAULT (NULL), displaycalendar TINYINT DEFAULT(1), autoDownload TINYINT DEFAULT(1), customSearchString VARCHAR(150) DEFAULT(NULL), watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), ignoreGlobalQuality TINYINT DEFAULT(0), ignoreGlobalIncludes TINYINT DEFAULT(0), ignoreGlobalExcludes TINYINT DEFAULT(0), searchProvider VARCHAR(20) DEFAULT(NULL), ignoreHideSpecials TINYINT DEFAULT(0), customSearchSizeMin INTEGER DEFAULT(NULL), customSearchSizeMax INTEGER DEFAULT(NULL), TRAKT_ID INTEGER DEFAULT(NULL), dlPath TEXT DEFAULT(NULL), customDelay INTEGER DEFAULT(NULL), TMDB_ID INTEGER DEFAULT(NULL) )',
     adapter: 'dbAdapter',
     defaultValues: {
 
@@ -129,6 +130,15 @@ CRUD.define(Serie, {
             'CREATE TABLE Series (ID_Serie INTEGER PRIMARY KEY NOT NULL, name VARCHAR(250) DEFAULT(NULL), banner VARCHAR(1024) DEFAULT(NULL), overview TEXT DEFAULT(NULL), TVDB_ID INTEGER DEFAULT(NULL), IMDB_ID VARCHAR(20) DEFAULT(NULL), TVRage_ID INTEGER DEFAULT(NULL), actors VARCHAR(1024) DEFAULT(NULL), airs_dayofweek VARCHAR(10) DEFAULT(NULL), airs_time VARCHAR(15) DEFAULT(NULL), timezone VARCHAR(30) DEFAULT(NULL), contentrating VARCHAR(20) DEFAULT(NULL), firstaired DATE DEFAULT(NULL), genre VARCHAR(50) DEFAULT(NULL), country VARCHAR(50) DEFAULT(NULL), language VARCHAR(50) DEFAULT(NULL), network VARCHAR(50) DEFAULT(NULL), rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), runtime INTEGER DEFAULT(NULL), status VARCHAR(50) DEFAULT(NULL), added DATE DEFAULT(NULL), addedby VARCHAR(50) DEFAULT(NULL), fanart VARCHAR(150) DEFAULT(NULL), poster VARCHAR(150) DEFAULT(NULL), lastupdated TIMESTAMP DEFAULT (NULL), lastfetched TIMESTAMP DEFAULT (NULL), nextupdate TIMESTAMP DEFAULT (NULL), displaycalendar TINYINT DEFAULT(1), autoDownload TINYINT DEFAULT(1), customSearchString VARCHAR(150) DEFAULT(NULL), watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), ignoreGlobalQuality TINYINT DEFAULT(0), ignoreGlobalIncludes TINYINT DEFAULT(0), ignoreGlobalExcludes TINYINT DEFAULT(0), searchProvider VARCHAR(20) DEFAULT(NULL), ignoreHideSpecials TINYINT DEFAULT(0), customSearchSizeMin INTEGER DEFAULT(NULL), customSearchSizeMax INTEGER DEFAULT(NULL), TRAKT_ID INTEGER DEFAULT(NULL), dlPath TEXT DEFAULT(NULL), customDelay INTEGER DEFAULT(NULL) )',
             'INSERT OR IGNORE INTO Series (ID_Serie, name, banner, overview, TVDB_ID, IMDB_ID, TVRage_ID, actors, airs_dayofweek, airs_time, timezone, contentrating, firstaired, genre, country, language, network, rating, ratingcount, runtime, status, added, addedby, fanart, poster, lastupdated, lastfetched, nextupdate, displaycalendar, autoDownload, customSearchString, watched, notWatchedCount, ignoreGlobalQuality, ignoreGlobalIncludes, ignoreGlobalExcludes, searchProvider, ignoreHideSpecials, customSearchSizeMin, customSearchSizeMax, TRAKT_ID, dlPath) select ID_Serie, name, banner, overview, TVDB_ID, IMDB_ID, TVRage_ID, actors, airs_dayofweek, airs_time, timezone, contentrating, firstaired, genre, country, language, network, rating, ratingcount, runtime, status, added, addedby, fanart, poster, lastupdated, lastfetched, nextupdate, displaycalendar, autoDownload, customSearchString, watched, notWatchedCount, ignoreGlobalQuality, ignoreGlobalIncludes, ignoreGlobalExcludes, searchProvider, ignoreHideSpecials, customSearchSizeMin, customSearchSizeMax, TRAKT_ID, dlPath from Series_bak',
             'DROP TABLE Series_bak'
+        ],
+        16: [
+            'ALTER TABLE Series RENAME TO Series_bak',
+            'CREATE TABLE Series (ID_Serie INTEGER PRIMARY KEY NOT NULL, name VARCHAR(250) DEFAULT(NULL), banner VARCHAR(1024) DEFAULT(NULL), overview TEXT DEFAULT(NULL), TVDB_ID INTEGER DEFAULT(NULL), IMDB_ID VARCHAR(20) DEFAULT(NULL), TVRage_ID INTEGER DEFAULT(NULL), actors VARCHAR(1024) DEFAULT(NULL), airs_dayofweek VARCHAR(10) DEFAULT(NULL), airs_time VARCHAR(15) DEFAULT(NULL), timezone VARCHAR(30) DEFAULT(NULL), contentrating VARCHAR(20) DEFAULT(NULL), firstaired DATE DEFAULT(NULL), genre VARCHAR(50) DEFAULT(NULL), country VARCHAR(50) DEFAULT(NULL), language VARCHAR(50) DEFAULT(NULL), network VARCHAR(50) DEFAULT(NULL), rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), runtime INTEGER DEFAULT(NULL), status VARCHAR(50) DEFAULT(NULL), added DATE DEFAULT(NULL), addedby VARCHAR(50) DEFAULT(NULL), fanart VARCHAR(150) DEFAULT(NULL), poster VARCHAR(150) DEFAULT(NULL), lastupdated TIMESTAMP DEFAULT (NULL), lastfetched TIMESTAMP DEFAULT (NULL), nextupdate TIMESTAMP DEFAULT (NULL), displaycalendar TINYINT DEFAULT(1), autoDownload TINYINT DEFAULT(1), customSearchString VARCHAR(150) DEFAULT(NULL), watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), ignoreGlobalQuality TINYINT DEFAULT(0), ignoreGlobalIncludes TINYINT DEFAULT(0), ignoreGlobalExcludes TINYINT DEFAULT(0), searchProvider VARCHAR(20) DEFAULT(NULL), ignoreHideSpecials TINYINT DEFAULT(0), customSearchSizeMin INTEGER DEFAULT(NULL), customSearchSizeMax INTEGER DEFAULT(NULL), TRAKT_ID INTEGER DEFAULT(NULL), dlPath TEXT DEFAULT(NULL), customDelay INTEGER DEFAULT(NULL), TMDB_ID INTEGER DEFAULT(NULL) )',
+            'INSERT OR IGNORE INTO Series (ID_Serie, name, banner, overview, TVDB_ID, IMDB_ID, TVRage_ID, actors, airs_dayofweek, airs_time, timezone, contentrating, firstaired, genre, country, language, network, rating, ratingcount, runtime, status, added, addedby, fanart, poster, lastupdated, lastfetched, nextupdate, displaycalendar, autoDownload, customSearchString, watched, notWatchedCount, ignoreGlobalQuality, ignoreGlobalIncludes, ignoreGlobalExcludes, searchProvider, ignoreHideSpecials, customSearchSizeMin, customSearchSizeMax, TRAKT_ID, dlPath, customDelay) select ID_Serie, name, banner, overview, TVDB_ID, IMDB_ID, TVRage_ID, actors, airs_dayofweek, airs_time, timezone, contentrating, firstaired, genre, country, language, network, rating, ratingcount, runtime, status, added, addedby, fanart, poster, lastupdated, lastfetched, nextupdate, displaycalendar, autoDownload, customSearchString, watched, notWatchedCount, ignoreGlobalQuality, ignoreGlobalIncludes, ignoreGlobalExcludes, searchProvider, ignoreHideSpecials, customSearchSizeMin, customSearchSizeMax, TRAKT_ID, dlPath, customDelay from Series_bak',
+            'DROP TABLE Series_bak',
+            'UPDATE Series set banner = null',
+            'UPDATE Series set poster = null',
+            'UPDATE Series set fanart = null'
         ]
     }
 }, {
@@ -272,17 +282,18 @@ CRUD.define(Season, {
     className: 'Season',
     table: 'Seasons',
     primary: 'ID_Season',
-    fields: ['ID_Season', 'ID_Serie', 'poster', 'overview', 'seasonnumber', 'ratings', 'ratingcount', 'watched', 'notWatchedCount', 'TRAKT_ID'],
+    fields: ['ID_Season', 'ID_Serie', 'poster', 'overview', 'seasonnumber', 'ratings', 'ratingcount', 'watched', 'notWatchedCount', 'TRAKT_ID', 'TMDB_ID'],
     relations: {
         'Serie': CRUD.RELATION_FOREIGN,
         'Episode': CRUD.RELATION_FOREIGN
     },
     indexes: [
-        'ID_Serie'
+        'ID_Serie',
+        'TMDB_ID'
     ],
     orderProperty: 'seasonnumber',
     orderDirection: 'DESC',
-    createStatement: 'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
+    createStatement: 'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), TMDB_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
     adapter: 'dbAdapter',
     defaultValues: {},
     migrations: {
@@ -315,6 +326,13 @@ CRUD.define(Season, {
             'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
             'INSERT OR IGNORE INTO Seasons (ID_Season, ID_Serie, poster, overview, seasonnumber, ratings, ratingcount,watched, notWatchedCount) select ID_Season, ID_Serie, poster, overview, seasonnumber, ratings, ratingcount,watched, notWatchedCount from Seasons_bak',
             'DROP TABLE Seasons_bak'
+        ],
+        7: [
+            'ALTER TABLE Seasons RENAME TO Seasons_bak',
+            'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), TMDB_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
+            'INSERT OR IGNORE INTO Seasons (ID_Season, ID_Serie, poster, overview, seasonnumber, ratings, ratingcount, watched, notWatchedCount, TRAKT_ID) select ID_Season, ID_Serie, poster, overview, seasonnumber, ratings, ratingcount,watched, notWatchedCount, TRAKT_ID from Seasons_bak',
+            'DROP TABLE Seasons_bak',
+            'UPDATE Seasons set poster = null'
         ]
     }
 }, {
@@ -358,13 +376,13 @@ CRUD.define(Episode, {
     className: 'Episode',
     table: 'Episodes',
     primary: 'ID_Episode',
-    fields: ['ID_Episode', 'ID_Serie', 'ID_Season', 'TVDB_ID', 'episodename', 'episodenumber', 'seasonnumber', 'firstaired', 'firstaired_iso', 'IMDB_ID', 'language', 'overview', 'rating', 'ratingcount', 'filename', 'images', 'watched', 'watchedAt', 'downloaded', 'magnetHash', 'TRAKT_ID', 'leaked'],
+    fields: ['ID_Episode', 'ID_Serie', 'ID_Season', 'TVDB_ID', 'episodename', 'episodenumber', 'seasonnumber', 'firstaired', 'firstaired_iso', 'IMDB_ID', 'language', 'overview', 'rating', 'ratingcount', 'filename', 'images', 'watched', 'watchedAt', 'downloaded', 'magnetHash', 'TRAKT_ID', 'leaked', 'TMDB_ID'],
     autoSerialize: ['images'],
     relations: {
         'Serie': CRUD.RELATION_FOREIGN,
         'Season': CRUD.RELATION_FOREIGN
     },
-    createStatement: 'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER DEFAULT NULL, leaked INTEGER DEFAULT 0 )',
+    createStatement: 'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER DEFAULT NULL, leaked INTEGER DEFAULT 0, TMDB_ID INTEGER DEFAULT(NULL) )',
     adapter: 'dbAdapter',
     defaultValues: {
         watched: 0
@@ -374,7 +392,8 @@ CRUD.define(Episode, {
         'TVDB_ID',
         'TRAKT_ID',
         'ID_Serie, firstaired',
-        'ID_Season'
+        'ID_Season',
+        'TMDB_ID'
     ],
     fixtures: [
 
@@ -392,26 +411,33 @@ CRUD.define(Episode, {
         10: [
             'ALTER TABLE Episodes RENAME TO Episodes_bak',
             'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER UNIQUE, episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL , firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL )',
-            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, watched, watchedAt, magnetHash) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, imdb_id, language, overview, rating, ratingcount, filename, coalesce(watched,0), watchedAt, magnetHash from Episodes_bak;',
+            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, watched, watchedAt, magnetHash) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, coalesce(watched,0), watchedAt, magnetHash from Episodes_bak',
             'DROP TABLE Episodes_bak'
         ],
         11: [
             'ALTER TABLE Episodes RENAME TO Episodes_bak',
             'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER UNIQUE, episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER NULL )',
-            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, imdb_id, language, overview, rating, ratingcount, filename, images, coalesce(watched,0), watchedAt, downloaded, magnetHash from Episodes_bak;',
+            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, coalesce(watched,0), watchedAt, downloaded, magnetHash from Episodes_bak',
             'DROP TABLE Episodes_bak'
         ],
         12: [
             'ALTER TABLE Episodes RENAME TO Episodes_bak',
             'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER UNIQUE, episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER NULL, leaked INTEGER DEFAULT 0 )',
-            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, imdb_id, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID from Episodes_bak;',
+            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID from Episodes_bak',
             'DROP TABLE Episodes_bak'
         ],
         13: [
             'ALTER TABLE Episodes RENAME TO Episodes_bak',
             'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER NULL, leaked INTEGER DEFAULT 0 )',
-            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, imdb_id, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked from Episodes_bak;',
+            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked from Episodes_bak',
             'DROP TABLE Episodes_bak'
+        ],
+        14: [
+            'ALTER TABLE Episodes RENAME TO Episodes_bak',
+            'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER NULL, leaked INTEGER DEFAULT 0, TMDB_ID INTEGER DEFAULT(NULL) )',
+            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, filename, images, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked from Episodes_bak',
+            'DROP TABLE Episodes_bak',
+            'UPDATE Episodes set images = null'
         ]
     }
 }, {

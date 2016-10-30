@@ -52,9 +52,9 @@ DuckieTV
             console.info("Executing the 1.1.4cleanupOrphanedEpisodes to remove orphaned episodes");
         }
 
-        // Refresh all to fetch Trakt_id for Series, Seasons and Episodes
+        // Refresh all to fetch TRAKT_ID and TMDB_ID for Series, Seasons and Episodes
 
-        if (!localStorage.getItem('1.1.4refresh')) {
+        if (!localStorage.getItem('1.1.4refreshIDs')) {
             setTimeout(function() {
                 FavoritesService.favorites.map(function(serie) {
                     FavoritesService.adding(serie.TVDB_ID);
@@ -71,10 +71,10 @@ DuckieTV
                         FavoritesService.addError(serie.TVDB_ID, err);
                     });
                 });
-                console.log('1.1.4refresh done!');
-                localStorage.setItem('1.1.4refresh', new Date());
+                console.log('1.1.4refreshIDs done!');
+                localStorage.setItem('1.1.4refreshIDs', new Date());
             }, 8000);
-            console.info("Executing the 1.1.4refresh to update Trakt_id for all Series, Seasons and Episodes");
+            console.info("Executing the 1.1.4refreshIDs to update TRAKT_ID & TMDB_ID for all Series, Seasons and Episodes");
         }
 
         // Update qBittorrent to qBittorrent (pre3.2)
