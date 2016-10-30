@@ -74,7 +74,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
             data.TVDB_ID = data.tvdb_id;
             data.IMDB_ID = data.imdb_id;
             data.TRAKT_ID = data.trakt_id;
-            data.TRAKT_ID = data.tmdb_id;
+            data.TMDB_ID = data.tmdb_id;
             if (service.downloadRatings && (!episode.ratingcount || episode.ratingcount + 25 > data.votes)) {
                 data.rating = Math.round(data.rating * 10);
                 data.ratingcount = data.votes;
