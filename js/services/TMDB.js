@@ -9,7 +9,9 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
   var APIKey = SettingsService.get('tmdb.api_key') || "";
   var endpoints = {
     config: APIUrl + "/configuration?api_key=" + APIKey,
+    // Returns Serie Poster & BG as well as Posters for every season
     serie: APIUrl + "/tv/%s?language=en&api_key=" + APIKey,
+    // Season number and episode number, IDs not required
     episode: APIUrl + "/tv/%s/season/%s/episode/%s/images?language=en&api_key=" + APIKey
   };
 
@@ -82,11 +84,14 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
 
   var getImages = function(type, serie, season, episode) {
     return new Promise(function(resolve) {
-      if (!serie || (type == 'episode' && !episode)) {
+      if (!serie || (type == 'episode' && (!episode || !season))) {
         console.error("Missing TMDB ID", serie, season, episode);
         return resolve(null);
       }
       requestQueue(getUrl(type, serie, season, episode)).then(function(data) {
+        if (type == 'episode') {
+          return resolve({ still: getImgUrl(data.still_path, 'still') });
+        }
         resolve({
           poster: getImgUrl(data.poster_path, 'poster'),
           backdrop: getImgUrl(data.backdrop_path, 'backdrop'),
