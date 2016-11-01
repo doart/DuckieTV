@@ -279,18 +279,17 @@ CRUD.define(Season, {
     className: 'Season',
     table: 'Seasons',
     primary: 'ID_Season',
-    fields: ['ID_Season', 'ID_Serie', 'poster', 'overview', 'seasonnumber', 'ratings', 'ratingcount', 'watched', 'notWatchedCount', 'TRAKT_ID', 'TMDB_ID'],
+    fields: ['ID_Season', 'ID_Serie', 'poster', 'overview', 'seasonnumber', 'ratings', 'ratingcount', 'watched', 'notWatchedCount', 'TRAKT_ID'],
     relations: {
         'Serie': CRUD.RELATION_FOREIGN,
         'Episode': CRUD.RELATION_FOREIGN
     },
     indexes: [
         'ID_Serie',
-        'TMDB_ID'
     ],
     orderProperty: 'seasonnumber',
     orderDirection: 'DESC',
-    createStatement: 'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), TMDB_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
+    createStatement: 'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
     adapter: 'dbAdapter',
     defaultValues: {},
     migrations: {
@@ -325,10 +324,7 @@ CRUD.define(Season, {
             'DROP TABLE Seasons_bak'
         ],
         7: [
-            'ALTER TABLE Seasons RENAME TO Seasons_bak',
-            'CREATE TABLE Seasons ( ID_Season INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, poster VARCHAR(255), overview TEXT NULL, seasonnumber INTEGER, ratings INTEGER NULL, ratingcount INTEGER NULL, watched TINYINT DEFAULT(0), notWatchedCount INTEGER DEFAULT(0), TRAKT_ID INTEGER DEFAULT(NULL), TMDB_ID INTEGER DEFAULT(NULL), UNIQUE (ID_Serie, seasonnumber) ON CONFLICT REPLACE )',
-            'INSERT OR IGNORE INTO Seasons (ID_Season, ID_Serie, overview, seasonnumber, ratings, ratingcount, watched, notWatchedCount, TRAKT_ID) select ID_Season, ID_Serie, overview, seasonnumber, ratings, ratingcount,watched, notWatchedCount, TRAKT_ID from Seasons_bak',
-            'DROP TABLE Seasons_bak'
+            'UPDATE Seasons set poster = null'
         ]
     }
 }, {
@@ -372,13 +368,13 @@ CRUD.define(Episode, {
     className: 'Episode',
     table: 'Episodes',
     primary: 'ID_Episode',
-    fields: ['ID_Episode', 'ID_Serie', 'ID_Season', 'TVDB_ID', 'episodename', 'episodenumber', 'seasonnumber', 'firstaired', 'firstaired_iso', 'IMDB_ID', 'language', 'overview', 'rating', 'ratingcount', 'filename', 'images', 'watched', 'watchedAt', 'downloaded', 'magnetHash', 'TRAKT_ID', 'leaked', 'TMDB_ID'],
+    fields: ['ID_Episode', 'ID_Serie', 'ID_Season', 'TVDB_ID', 'episodename', 'episodenumber', 'seasonnumber', 'firstaired', 'firstaired_iso', 'IMDB_ID', 'language', 'overview', 'rating', 'ratingcount', 'filename', 'images', 'watched', 'watchedAt', 'downloaded', 'magnetHash', 'TRAKT_ID', 'leaked'],
     autoSerialize: ['images'],
     relations: {
         'Serie': CRUD.RELATION_FOREIGN,
         'Season': CRUD.RELATION_FOREIGN
     },
-    createStatement: 'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER DEFAULT NULL, leaked INTEGER DEFAULT 0, TMDB_ID INTEGER DEFAULT(NULL) )',
+    createStatement: 'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER DEFAULT NULL, leaked INTEGER DEFAULT 0 )',
     adapter: 'dbAdapter',
     defaultValues: {
         watched: 0
@@ -389,7 +385,6 @@ CRUD.define(Episode, {
         'TRAKT_ID',
         'ID_Serie, firstaired',
         'ID_Season',
-        'TMDB_ID'
     ],
     fixtures: [
 
@@ -429,10 +424,7 @@ CRUD.define(Episode, {
             'DROP TABLE Episodes_bak'
         ],
         14: [
-            'ALTER TABLE Episodes RENAME TO Episodes_bak',
-            'CREATE TABLE Episodes ( ID_Episode INTEGER PRIMARY KEY NOT NULL,ID_Serie INTEGER NOT NULL, ID_Season INTEGER NULL, TVDB_ID INTEGER DEFAULT(NULL), episodename VARCHAR(255), episodenumber INTEGER , seasonnumber INTEGER NULL ,firstaired TIMESTAMP, firstaired_iso varchar(25), IMDB_ID VARCHAR(20), language VARCHAR(3), overview TEXT default NULL, rating INTEGER DEFAULT(NULL), ratingcount INTEGER DEFAULT(NULL), filename VARCHAR(255) , images TEXT, watched INTEGER DEFAULT 0, watchedAt TIMESTAMP NULL, downloaded INTEGER DEFAULT 0, magnetHash VARCHAR(40) NULL, TRAKT_ID INTEGER NULL, leaked INTEGER DEFAULT 0, TMDB_ID INTEGER DEFAULT(NULL) )',
-            'INSERT OR IGNORE INTO Episodes (ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked) select ID_Episode, ID_Serie, ID_Season, TVDB_ID, episodename, episodenumber, seasonnumber, firstaired, IMDB_ID, language, overview, rating, ratingcount, watched, watchedAt, downloaded, magnetHash, TRAKT_ID, leaked from Episodes_bak',
-            'DROP TABLE Episodes_bak'
+            'UPDATE Episodes set filename = null, images = null'
         ]
     }
 }, {
