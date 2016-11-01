@@ -9,8 +9,7 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
   var APIKey = SettingsService.get('tmdb.api_key') || "";
   var endpoints = {
     config: APIUrl + "/configuration?api_key=" + APIKey,
-    serie: APIUrl + "/tv/%s/images?language=en&api_key=" + APIKey,
-    season: APIUrl + "/tv/%s/season/%s/images?language=en&api_key=" + APIKey,
+    serie: APIUrl + "/tv/%s?language=en&api_key=" + APIKey,
     episode: APIUrl + "/tv/%s/season/%s/episode/%s/images?language=en&api_key=" + APIKey
   };
 
@@ -25,24 +24,83 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
   };
 
   var getImgUrl = function(id, type) {
-    if (base_url && sizes) {
-      return base_url + sizes[type] + id;
+    if (!id || !base_url || !sizes) return undefined;
+    return base_url + sizes[type] + id;
+  };
+
+  var requests = 0;
+  var promiseStack = [];
+  var processing = false;
+  var requestQueue = function(data) {
+    return new Promise(function(resolve, reject) {
+      function newPromise(url, resolve, reject, attempted) {
+        return function() {
+          $http.get(url).then(function(response) {
+            resolve(response.data);
+          }, function(error) { // Try again on error
+            if (attempted || error.status != 429) {
+              return reject(error);
+            }
+            setTimeout(function () {
+              promiseStack.push(newPromise(data, resolve, reject, true));
+              if (!processing) {
+                processQueue();
+              }
+            }, 500);
+          });
+        };
+      }
+
+      promiseStack.push(newPromise(data, resolve, reject));
+      if (!processing) {
+        processQueue();
+      }
+    });
+  };
+
+  var processQueue = function() {
+    processing = true;
+    if (requests == 40) {
+      setTimeout(function() {
+        requests = 0;
+        processQueue();
+      }, 10700); // Bit over 10 seconds or it can error sometimes
+      return;
+    }
+
+    var nextPromise = promiseStack.shift();
+    if (nextPromise) {
+      requests++;
+      nextPromise();
+      setTimeout(function () {
+        processQueue();
+      }, 1);
+    } else {
+      processing = false;
     }
   };
 
   var getImages = function(type, serie, season, episode) {
-    return $http.get(getUrl(type, serie, season, episode)).then(function(response) {
-      var data = response.data;
-      var posters = data.posters.sort(function(a, b) { // sort by votes
-        return b.vote_count - a.vote_count;
+    return new Promise(function(resolve) {
+      if (!serie || (type == 'episode' && !episode)) {
+        console.error("Missing TMDB ID", serie, season, episode);
+        return resolve(null);
+      }
+      requestQueue(getUrl(type, serie, season, episode)).then(function(data) {
+        resolve({
+          poster: getImgUrl(data.poster_path, 'poster'),
+          backdrop: getImgUrl(data.backdrop_path, 'backdrop'),
+          seasons: data.seasons.map(function(season) {
+            return {
+              season: season.season_number,
+              poster: getImgUrl(season.poster_path, 'poster')
+            };
+          })
+        });
+      }).catch(function(error) {
+        console.error("Error fetching images for", serie, error);
+        resolve(null);
       });
-      var backdrops = data.backdrops.sort(function(a, b) { // sort by votes
-        return b.vote_count - a.vote_count;
-      });
-      return {
-        poster: getImgUrl(posters[0].file_path, 'poster'),
-        backdrop: getImgUrl(backdrops[0].file_path, 'backdrop')
-      };
     });
   };
 
@@ -69,25 +127,27 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
         console.error("Error fetching TMDB Configuration", error);
       });
     },
-    getSerieImages: function(serie) {
-      return getImages('serie', serie);
+    // Serie images returns a series poster and backdrop as well as all season posters
+    getSerieImages: function(serieID) {
+      return getImages('serie', serieID);
     },
-    getSeasonImages: function(serie, season) {
-      return getImages('serie', serie, season);
-    },
-    getEpisodeImages: function(serie, season, episode) {
-      return getImages('serie', serie, season, episode);
+    getEpisodeImages: function(serieID, seasonID, episodeID) {
+      return getImages('serie', serieID, seasonID, episodeID);
     }
   };
+
+  // Test queue and rate limiting, be sure to disable Network Cache in DevTools
+  var testAPILimits = function() {
+    for (var i = 0; i < 45; i++) {
+      service.getSerieImages('62413'); // Killjoys
+    }
+  }
+  //testAPILimits();
 
   if (!base_url || !sizes || Date.now() > lastUpdate * 1000 * 60 * 60 * 24 * 7) {
     console.info("Fetching new TMDB configuration");
     service.getConfig();
   }
-
-  service.getSerieImages('62413').then(function(images) {
-    console.log("Done", images)
-  })
 
   return service;
 }]);
