@@ -92,19 +92,22 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
         if (type == 'episode') {
           return resolve({ still: getImgUrl(data.still_path, 'still') });
         }
+        var seasons = {};
+        data.seasons.forEach(function(s) {
+          seasons[s.season_number] = getImgUrl(s.poster_path, 'poster');
+        });
         resolve({
           poster: getImgUrl(data.poster_path, 'poster'),
           backdrop: getImgUrl(data.backdrop_path, 'backdrop'),
-          seasons: data.seasons.map(function(season) {
-            return {
-              season: season.season_number,
-              poster: getImgUrl(season.poster_path, 'poster')
-            };
-          })
+          seasons: seasons
         });
       }).catch(function(error) {
         console.error("Error fetching images for", serie, error);
-        resolve(null);
+        resolve({
+          poster: null,
+          backdrop: null,
+          seasons: []
+        });
       });
     });
   };
@@ -137,7 +140,7 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
       return getImages('serie', serieID);
     },
     getEpisodeImages: function(serieID, seasonID, episodeID) {
-      return getImages('serie', serieID, seasonID, episodeID);
+      return getImages('episode', serieID, seasonID, episodeID);
     }
   };
 

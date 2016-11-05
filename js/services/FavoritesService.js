@@ -3,8 +3,8 @@
  *
  * Provides functionality to add and remove series and is the glue between Trakt.TV,
  */
-DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injector",
-    function($q, $rootScope, TraktTVv2, $injector) {
+DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injector", "TMDB",
+    function($q, $rootScope, TraktTVv2, $injector, TMDB) {
 
         /**
          * Helper function to add a serie to the service.favorites hash if it doesn't already exist.
@@ -38,6 +38,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
             data.airs_time = data.airs.time;
             data.timezone = data.airs.timezone;
             data.firstaired = new Date(data.first_aired).getTime();
+            data.banner = null;
             if (service.downloadRatings && (!serie.ratingcount || serie.ratingcount + 25 > data.votes)) {
                 data.rating = Math.round(data.rating * 10);
                 data.ratingcount = data.votes;
@@ -151,12 +152,12 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
          * @param  object seasons extended seasons input data from Trakt
          * @return object seasonCache indexed by seasonnumber
          */
-        var updateSeasons = function(serie, seasons) {
+        var updateSeasons = function(serie, seasons, images) {
             //console.debug("Update seasons!", seasons);
             return serie.getSeasonsByNumber().then(function(seasonCache) { // fetch the seasons and cache them by number.
                 return Promise.all(seasons.map(function(season) {
                     var SE = (season.number in seasonCache) ? seasonCache[season.number] : new Season();
-                    SE.poster = season.poster;
+                    SE.poster = images[season.number];
                     SE.seasonnumber = season.number;
                     SE.ID_Serie = serie.getID();
                     SE.overview = season.overview;
@@ -226,30 +227,34 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                     });
                 }
                 var serie = (useTrakt_id) ? service.getByTRAKT_ID(data.trakt_id) : service.getById(data.tvdb_id) || new Serie();
-                fillSerie(serie, data);
-                return serie.Persist().then(function() {
-                        return serie;
-                    }).then(function(serie) {
-                        addToFavoritesList(serie); // cache serie in favoritesservice.favorites
-                        $rootScope.$applyAsync();
-                        entity = serie;
-                        return cleanupEpisodes(data.seasons, entity);
-                    })
-                    .then(function() {
-                        return updateSeasons(entity, data.seasons);
-                    })
-                    .then(function(seasonCache) {
-                        return updateEpisodes(entity, data.seasons, watched, seasonCache);
-                    })
-                    .then(function(episodeCache) {
-                        $injector.get('CalendarEvents').processEpisodes(entity, episodeCache);
-                        //console.debug("FavoritesService.Favorites", service.favorites)
-                        $rootScope.$applyAsync();
-                        $rootScope.$broadcast('background:load', serie.fanart);
-                        $rootScope.$broadcast('storage:update');
-                        $rootScope.$broadcast('serie:recount:watched', serie.ID_Serie);
-                        return entity;
-                    });
+                return TMDB.getSerieImages(data.tmdb_id).then(function(images) {
+                  data.poster = images.poster;
+                  data.fanart = images.backdrop;
+                  fillSerie(serie, data);
+                  serie.Persist().then(function() {
+                          return serie;
+                      }).then(function(serie) {
+                          addToFavoritesList(serie); // cache serie in favoritesservice.favorites
+                          $rootScope.$applyAsync();
+                          entity = serie;
+                          return cleanupEpisodes(data.seasons, entity);
+                      })
+                      .then(function() {
+                          return updateSeasons(entity, data.seasons, images.seasons);
+                      })
+                      .then(function(seasonCache) {
+                          return updateEpisodes(entity, data.seasons, watched, seasonCache);
+                      })
+                      .then(function(episodeCache) {
+                          $injector.get('CalendarEvents').processEpisodes(entity, episodeCache);
+                          //console.debug("FavoritesService.Favorites", service.favorites)
+                          $rootScope.$applyAsync();
+                          $rootScope.$broadcast('background:load', serie.fanart);
+                          $rootScope.$broadcast('storage:update');
+                          $rootScope.$broadcast('serie:recount:watched', serie.ID_Serie);
+                          return entity;
+                      });
+                });
             },
             /**
              * Helper function to fetch all the episodes for a serie

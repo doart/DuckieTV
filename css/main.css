@@ -720,6 +720,10 @@ serieheader[mode=poster] h3 {
   display: initial !important;
 }
 
+.series .banner.img-load-error h3 {
+  margin-top: -36px;
+}
+
 .series.adding .poster figcaption h3 {
   bottom: initial;
   top: 0;
