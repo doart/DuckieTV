@@ -75,7 +75,6 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
             data.TVDB_ID = data.tvdb_id;
             data.IMDB_ID = data.imdb_id;
             data.TRAKT_ID = data.trakt_id;
-            data.TMDB_ID = data.tmdb_id;
             if (service.downloadRatings && (!episode.ratingcount || episode.ratingcount + 25 > data.votes)) {
                 data.rating = Math.round(data.rating * 10);
                 data.ratingcount = data.votes;
@@ -162,7 +161,6 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                     SE.ID_Serie = serie.getID();
                     SE.overview = season.overview;
                     SE.TRAKT_ID = season.trakt_id;
-                    SE.TMDB_ID = season.tmdb_id;
                     if (service.downloadRatings && (!SE.ratingcount || SE.ratingcount + 25 > season.votes)) {
                         SE.ratings = Math.round(season.rating * 10);
                         SE.ratingcount = season.votes;
