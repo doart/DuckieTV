@@ -229,7 +229,7 @@ DuckieTV.factory('FavoritesService', ["$q", "$rootScope", "TraktTVv2", "$injecto
                   data.poster = images.poster;
                   data.fanart = images.backdrop;
                   fillSerie(serie, data);
-                  serie.Persist().then(function() {
+                  return serie.Persist().then(function() {
                           return serie;
                       }).then(function(serie) {
                           addToFavoritesList(serie); // cache serie in favoritesservice.favorites
