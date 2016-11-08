@@ -53,8 +53,16 @@ DuckieTV.factory('TraktTVUpdateService', ["$q", "TraktTVv2", "FavoritesService",
               return TraktTVv2.trending(true).then(function(result) {
                 return Promise.all(result.map(function(serie) {
                   return new Promise(function(resolve) {
+                    // Delete bunch of stuff we don't need to save space
                     delete serie.ids;
                     delete serie.available_translations;
+                    delete serie.title;
+                    delete serie.tvrage_id;
+                    delete serie.imdb_id;
+                    delete serie.updated_at;
+                    delete serie.aired_episodes;
+                    delete serie.homepage;
+                    delete serie.slug_id;
                     var originalSerie = oldCache[oldCacheIds.indexOf(serie.tvdb_id)];
                     if (originalSerie && originalSerie.poster) {
                       serie.poster = originalSerie.poster;
