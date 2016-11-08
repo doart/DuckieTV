@@ -25,13 +25,14 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
     return url;
   };
 
-  var requests = 0;
   var promiseStack = [];
   var processing = false;
+  var limitRemaining = 40;
   var requestQueue = function(data) {
     return new Promise(function(resolve, reject) {
       function newPromise(url, resolve, reject, attempted) {
         return function() {
+          limitRemaining--;
           $http.get(url).then(function(response) {
             resolve(response.data);
           }, function(error) { // Try again on error
@@ -57,23 +58,28 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
 
   var processQueue = function() {
     processing = true;
-    if (requests == 40) {
+    if (limitRemaining === 40) {
+      // kick off timer to reset limitRemaining in 10.5 secs
       setTimeout(function() {
-        requests = 0;
-        processQueue();
-      }, 10700); // Bit over 10 seconds or it can error sometimes
-      return;
+        limitRemaining = 40;
+      }, 10500);
     }
 
-    var nextPromise = promiseStack.shift();
-    if (nextPromise) {
-      requests++;
-      nextPromise();
+    if (limitRemaining > 0) {
+      var nextPromise = promiseStack.shift();
+      if (nextPromise) {
+        nextPromise();
+        setTimeout(function () {
+          processQueue();
+        }, 1);
+      } else {
+        processing = false;
+      }
+    } else {
+      // limit reached, try again in half a sec
       setTimeout(function () {
         processQueue();
-      }, 1);
-    } else {
-      processing = false;
+      }, 500);
     }
   };
 
