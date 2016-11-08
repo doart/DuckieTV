@@ -4,8 +4,8 @@
  *
  * For API docs: check here: http://docs.trakt.apiary.io/#
  */
-DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
-    function(SettingsService, $q, $http, toaster) {
+DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster", "TMDB",
+    function(SettingsService, $q, $http, toaster, TMDB) {
 
         var activeSearchRequest = false,
             activeTrendingRequest = false,
@@ -21,7 +21,7 @@ DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
             seasons: 'shows/%s/seasons?extended=full',
             episodes: 'shows/%s/seasons/%s/episodes?extended=full',
             search: 'search/show?extended=full&limit=50&query=%s',
-            trending: 'shows/trending?extended=full&limit=500',
+            trending: 'shows/trending?extended=full&limit=400',
             tvdb_id: 'search/tvdb/%s?type=show',
             trakt_id: 'search/trakt/%s?type=show',
             login: 'auth/login',
@@ -37,11 +37,6 @@ DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
         };
 
         var parsers = {
-            /**
-             * When the series lists are fetched, put the poster / banner / fanart properties on the main
-             * object instead of inside data.images. This makes sure that the API between the CRUD entity and the
-             * incoming data is the same.
-             */
             trakt: function(show) {
                 Object.keys(show.ids).map(function(key) {
                     show[key + '_id'] = show.ids[key];
@@ -257,14 +252,16 @@ DuckieTV.factory('TraktTVv2', ["SettingsService", "$q", "$http", "toaster",
                 return (activeSearchRequest && activeSearchRequest.resolve);
             },
             trending: function(noCache) {
-                if (undefined === noCache) {
+                if (!noCache) {
                     if (!localStorage.getItem('trakttv.trending.cache')) {
                         return $http.get('trakt-trending-500.json').then(function(result) {
                             var output = result.data.filter(function(show) {
-                                return typeof(show.show.ids.tvdb) !== "undefined";
+                                if (show.tvdb_id) return true;
                             }).map(function(show) {
-                                return parsers.trakt(show.show);
+                              show.poster = TMDB.getImgUrl(show.poster, 'poster');
+                              return show;
                             });
+                            localStorage.setItem('trakttv.trending.cache', JSON.stringify(output));
                             return output;
                         });
                     } else {

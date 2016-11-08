@@ -25,11 +25,6 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
     return url;
   };
 
-  var getImgUrl = function(id, type) {
-    if (!id || !base_url || !sizes) return undefined;
-    return base_url + sizes[type] + id;
-  };
-
   var requests = 0;
   var promiseStack = [];
   var processing = false;
@@ -86,19 +81,23 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
     return new Promise(function(resolve) {
       if (!serie || (type == 'episode' && (!episode || !season))) {
         console.error("Missing TMDB ID", serie, season, episode);
-        return resolve(null);
+        return resolve({
+          poster: null,
+          backdrop: null,
+          seasons: []
+        });
       }
       requestQueue(getUrl(type, serie, season, episode)).then(function(data) {
         if (type == 'episode') {
-          return resolve({ still: getImgUrl(data.still_path, 'still') });
+          return resolve({ still: service.getImgUrl(data.still_path, 'still') });
         }
         var seasons = {};
         data.seasons.forEach(function(s) {
-          seasons[s.season_number] = getImgUrl(s.poster_path, 'poster');
+          seasons[s.season_number] = service.getImgUrl(s.poster_path, 'poster');
         });
         resolve({
-          poster: getImgUrl(data.poster_path, 'poster'),
-          backdrop: getImgUrl(data.backdrop_path, 'backdrop'),
+          poster: service.getImgUrl(data.poster_path, 'poster'),
+          backdrop: service.getImgUrl(data.backdrop_path, 'backdrop'),
           seasons: seasons
         });
       }).catch(function(error) {
@@ -113,6 +112,11 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
   };
 
   var service = {
+    // Returns an images URL for its ID and type
+    getImgUrl: function(id, type) {
+      if (!id || !base_url || !sizes) return null;
+      return base_url + sizes[type] + id;
+    },
     getConfig: function() {
       $http.get(getUrl('config')).then(function(response) {
         var data = response.data.images;
@@ -143,14 +147,6 @@ DuckieTV.factory('TMDB', ["SettingsService", "$q", "$http", function(SettingsSer
       return getImages('episode', serieID, seasonID, episodeID);
     }
   };
-
-  // Test queue and rate limiting, be sure to disable Network Cache in DevTools
-  var testAPILimits = function() {
-    for (var i = 0; i < 45; i++) {
-      service.getSerieImages('62413'); // Killjoys
-    }
-  }
-  //testAPILimits();
 
   if (!base_url || !sizes || Date.now() > lastUpdate * 1000 * 60 * 60 * 24 * 7) {
     console.info("Fetching new TMDB configuration");
